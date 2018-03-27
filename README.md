@@ -30,9 +30,12 @@ http://api.meituan.com/group/v4/deal/select/city/30/cate/1?sort=solds&hasGroup=t
 各地的美食偏好情况分析：<br>
 1.深圳：最爱牛肉、牛肉丸、三文鱼、豆腐、水果
 ![](https://i.imgur.com/0IVWR6E.jpg)
+<br>
 2.北京：最爱牛肉、五花肉、三文鱼、酸梅汤、羊蝎子、宫保鸡丁
 ![](https://i.imgur.com/KLaLet1.jpg)
+<br>
 3.上海：最爱三文鱼、牛肉、酸菜鱼、红烧肉、提拉米苏
 ![](https://i.imgur.com/JxJV0Df.jpg)
+<br>
 4.襄阳：表示四线小城市没吃过三文鱼这种高端产品，不过牛肉还是不错的，还有火锅、干锅什么的也很nice
 ![](https://i.imgur.com/jyRQPWb.jpg)
