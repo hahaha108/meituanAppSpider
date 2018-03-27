@@ -58,7 +58,7 @@ class MT_spider:
     def run(self):
         i = 0
         while True:
-            url = self.base_url.format(str(i))
+            url = self.base_url.format(str(i*100))
             itemlist = self.parse(url)
             if not itemlist:
                 break
@@ -66,7 +66,7 @@ class MT_spider:
                 self.save_item(item)
             print('已成功获取%d个商家信息'%((i+1)*100))
             i += 1
-            time.sleep(random.randint(3,10))
+            time.sleep(random.randint(2,5))
 
     def save_item(self,item):
         if self.save_mode == 'txt':
@@ -86,11 +86,25 @@ class MT_spider:
 
     def parse(self,url):
         response = requests.get(url,headers=random.choice(headers))
-        try:
-            info_dict = json.loads(response.text)
-            info_list = info_dict['data']
-        except:
-            return None
+        number = 0
+        while True:
+            try:
+                info_dict = json.loads(response.text)
+                info_list = info_dict['data']
+                if info_list:
+                    break
+                else:
+                    number += 1
+                    if number >= 10:
+                        return None
+                    time.sleep(10)
+                    response = requests.get(url, headers=random.choice(headers))
+            except:
+                number += 1
+                if number >= 10:
+                    return None
+                time.sleep(10)
+                response = requests.get(url, headers=random.choice(headers))
 
         itemlist = []
         for info in info_list:
