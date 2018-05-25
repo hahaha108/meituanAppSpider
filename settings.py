@@ -1,5 +1,11 @@
+# -*- coding: utf-8 -*-
 
-# 请求头信息
+'''
+meituan api spider's global variables settings.
+'''
+
+
+# HTTP Request headers infos setting variables:
 headers = [
     {
         'User-Agent': 'AiMeiTuan /Xiaomi-4.4.2-MI 6 -720x1280-240-5.5.4-254-863254010002128-qqcpd',
@@ -13,14 +19,16 @@ headers = [
     }
 ]
 
-# 用于设置csv、txt文件的存储路径和文件名
-save_path = './美团商家信息'
-filename = '深圳商家'
+# limit setting variable used to limit numbers of restaurants in one request:
+limit = 25
 
+# Data storage path and filename(.csv or .txt file) setting variables:
+savePath = './meituanRestaurantsInfos'
+filename = 'HaikouRestaurants'
 
-# 设置表名，数据库信息
-table_name = 'SZ_meituan'
-db_conf = {
+# MySQL table name and MySQL Database setting variables:
+tableName = 'HaikouMeituan'
+sqlConf = {
       'host': '127.0.0.1',
       'port': 3306,
       'user': 'root',
@@ -28,3 +36,13 @@ db_conf = {
       'db': 'mtdb',
       'charset': 'utf8',
    }
+
+# MongoDB collection name and MongoDB Database setting variables:
+collection = 'HaikouMeituanCleaned'
+mongoConf = {
+    'host': 'localhost', 'port': 27017, 'database': 'test',
+    'user': 'test', 'password': 'Crz437991'
+}
+
+# Neo4j graph database setting variables:
+neoConf = {"host": "localhost", "port": 7687, "password": "Crz437991"}
