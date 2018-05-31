@@ -1,3 +1,11 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+'''
+Define a meituan api spider class allows you to fetch meituan
+restaurants infos in haikou city.
+'''
+
 import csv
 import os
 
@@ -7,79 +15,88 @@ import random
 
 import time
 
-from settings import headers,save_path,filename,db_conf,table_name
+from settings import headers,savePath,filename,sqlConf,tableName,limit
 import json
 
 
 class MT_spider:
 
-    base_url = "http://api.meituan.com/group/v4/deal/select/city/30/cate/1?sort=solds&hasGroup=true&mpt_cate1=1&offset={0}&limit=100"
-    mode_list = ['txt','csv','db']
-    table_name = table_name
+    baseUrl = ("http://api.meituan.com/group/v4/deal/select/city/94/cate/1?"
+                "sort=solds&hasGroup=true&mpt_cate1=1&offset={0}&limit={1}")
+    modeList = ['txt','csv','mysql']
+    tableName = tableName
 
 
     #美团深圳地区美食爬虫
-    def __init__(self,save_mode = 'txt'):
-        if save_mode not in self.mode_list:
-            raise RuntimeError('存储模式指定有误，请输入txt、csv或者db')
-        self.save_mode = save_mode
+    def __init__(self,saveMode = 'txt'):
+        if saveMode not in self.modeList:
+            raise RuntimeError('存储模式指定有误，请输入txt、csv或者mysql')
+        self.saveMode = saveMode
 
-        if self.save_mode == 'db':
-            self.conn = pymysql.connect(**db_conf)
+        if self.saveMode == 'mysql':
+            self.conn = pymysql.connect(**sqlConf)
             self.cur = self.conn.cursor()
 
-            sql = '''CREATE TABLE IF NOT EXISTS {0}( 
-                id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT, 
-                shopName VARCHAR(60), 
-                cateName VARCHAR(30), 
-                avgScore FLOAT, 
-                areaName VARCHAR(30), 
-                lat FLOAT, 
+            sql = '''CREATE TABLE IF NOT EXISTS {0}(
+                id INTEGER PRIMARY KEY NOT NULL AUTO_INCREMENT,
+                shopName VARCHAR(60),
+                cateName VARCHAR(30),
+                avgScore FLOAT,
+                areaName VARCHAR(30),
+                lat FLOAT,
                 lng FLOAT,
-                addr VARCHAR(128), 
-                abstracts TEXT, 
+                addr VARCHAR(128),
+                abstracts TEXT,
                 openInfo VARCHAR(128),
                 phone VARCHAR(60),
                 historyCouponCount INTEGER,
                 introduction TEXT,
                 featureMenus TEXT
-                );'''.format(self.table_name)
+                );'''.format(self.tableName)
             self.cur.execute(sql)
             self.conn.commit()
         else:
-            if not os.path.exists(save_path):
-                os.makedirs(save_path)
-            file_path = os.path.join(save_path,filename+'.'+self.save_mode)
-            self.file = open(file_path,'w',encoding='utf-8',newline='')
-            if self.save_mode == 'csv':
+            if not os.path.exists(savePath):
+                os.makedirs(savePath)
+            filePath = os.path.join(savePath,filename+'.'+self.saveMode)
+            if not os.access(filePath, os.F_OK):
+                with open(filePath, 'w', encoding='utf-8', newline='') as file:
+                    if self.saveMode == 'csv':
+                        csvwriter = csv.writer(file)
+                        csvwriter.writerow(['店铺名称','类别','评分','所属片区','纬度','经度','详细地址','优惠套餐情况','营业时间','联系电话','累计售出份数','餐厅简介','特色菜'])
+            self.file = open(filePath, 'a', encoding='utf-8', newline='')
+            if self.saveMode == 'csv':
                 self.csvwriter = csv.writer(self.file)
-                self.csvwriter.writerow(['店铺名称','类别','评分','所属片区','纬度','经度','详细地址','优惠套餐情况','营业时间','联系电话','累计售出份数','餐厅简介','特色菜'])
-
     def run(self):
         i = 0
+        acquiredCount = 0
         while True:
-            url = self.base_url.format(str(i*100))
+            url = self.baseUrl.format(str(i*limit), limit)
+            print('>>>> url =', url)
             itemlist = self.parse(url)
             if not itemlist:
                 break
             for item in itemlist:
                 self.save_item(item)
-            print('已成功获取%d个商家信息'%((i+1)*100))
+            acquiredCount += len(itemlist)
+            print('已成功请求%d个商家信息'%((i+1)*limit))
+            print('已成功获取%d个商家信息'%(acquiredCount))
             i += 1
             time.sleep(random.randint(2,5))
 
     def save_item(self,item):
-        if self.save_mode == 'txt':
+        if self.saveMode == 'txt':
             for k,v in item.items():
                 self.file.write(str(k)+':'+str(v) + '\n')
             self.file.write('\n\n-----------------------------\n\n\n')
-        elif self.save_mode == 'csv':
+        elif self.saveMode == 'csv':
+            print('>> writing to csv file.')
             self.csvwriter.writerow(item.values())
         else:
             sql = '''
             INSERT INTO {0}(shopName,cateName,avgScore,areaName,lat,lng,addr,abstracts,openInfo,phone,historyCouponCount,introduction,featureMenus)
             VALUES ('{店铺名称}','{类别}','{评分}','{所属片区}','{纬度}','{经度}','{详细地址}','{优惠套餐情况}','{营业时间}','{联系电话}','{累计售出份数}','{餐厅简介}','{特色菜}')
-            '''.format(self.table_name,**item)
+            '''.format(self.tableName,**item)
             self.cur.execute(sql)
             self.conn.commit()
 
@@ -159,8 +176,15 @@ class MT_spider:
         return itemlist
 
     def __del__(self):
-        if self.save_mode == 'db':
+        if self.saveMode == 'mysql':
             self.cur.close()
             self.conn.close()
         else:
             self.file.close()
+
+
+
+# test:
+if __name__ == '__main__':
+    spider = MT_spider(saveMode='csv')
+    spider.run()
