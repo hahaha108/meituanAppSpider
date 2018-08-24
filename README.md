@@ -39,3 +39,5 @@ http://api.meituan.com/group/v4/deal/select/city/30/cate/1?sort=solds&hasGroup=t
 <br>
 4.襄阳：表示四线小城市没吃过三文鱼这种高端产品，不过牛肉还是不错的，还有火锅、干锅什么的也很nice
 ![](https://i.imgur.com/jyRQPWb.jpg)
+
+本程序仅供编程学习之用，请勿用于商业
