@@ -11,8 +11,8 @@ from spider_develop import MeituanSpider
 
 # save_mode ：txt存储为txt文件，csv存储为csv文件，db存储在mysql数据库中，无输入默认为txt
 
-# spider = MeituanSpider(save_mode='txt')
-spider = MeituanSpider(save_mode='csv')
-# spider = MeituanSpider(save_mode='db')
+# spider = MeituanSpider(saveMode='txt')
+spider = MeituanSpider(saveMode='csv')
+# spider = MeituanSpider(saveMode='db')
 
 spider.run()
