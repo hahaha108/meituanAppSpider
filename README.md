@@ -7,7 +7,7 @@
 可参照run.py<br>
 1.创建一个MT_spider，可指定存储模式，默认为txt
 ```python
-spider = MT_spider(save_mode='csv')
+spider = MT_spider(saveMode='csv')
 ```
 2.调用run方法
 ```python
